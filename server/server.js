@@ -1,7 +1,7 @@
 /*jslint esversion:6*/
 const express= require('express');
 const bodyParser = require('body-parser');
-
+const {ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose');
 const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
@@ -11,7 +11,7 @@ const app = express();
 app.use(bodyParser.json());
 
 
-//GET todos
+// GET /todos
 app.get('/todos', (req,res) => {
     let filter;
 
@@ -22,7 +22,26 @@ app.get('/todos', (req,res) => {
     });
 })
 
-//POST todos
+// GET /todos/:id
+app.get('/todos/:id', (req,res) => {
+    //res.status(200).send(req.params);  //test how req.params work
+    let id = req.params.id;
+
+    //invalid Id 404
+    if(!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+    Todo.findById(id).then(todo => {
+        if(!todo)
+            return res.status(404).send();
+        else
+            return res.status(200).send(JSON.stringify(todo,undefined,2));
+    });
+}, err => {
+    res.status(400).send();                        //not sending cuz the err message may contain private info
+})
+
+// POST /todos
 app.post('/todos',(req,res) => {
     console.log('request body: ',req.body);
     
@@ -38,6 +57,8 @@ app.post('/todos',(req,res) => {
     })
 })
 
+
+// POST /users
 app.post('/users',(req,res) => {
     console.log('request body: ',req.body);
     
