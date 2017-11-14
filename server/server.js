@@ -10,6 +10,18 @@ const app = express();
 
 app.use(bodyParser.json());
 
+
+//GET todos
+app.get('/todos', (req,res) => {
+    let filter;
+
+    Todo.find().then(todos => {
+        res.status(200).send(todos);
+    }, err => {
+        res.status(400).send(err);
+    });
+})
+
 //POST todos
 app.post('/todos',(req,res) => {
     console.log('request body: ',req.body);

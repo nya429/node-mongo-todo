@@ -5,12 +5,22 @@ const request = require('supertest');
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 
-beforeEach((done) => {            //run some code before each script
+//dummy todo data
+const todos = [ {text:"todo test 1"},
+                {text:"todo test 2"},
+                {text:"todo test 3"},
+                {text:"todo test 4"},
+                {text:"todo test 5"}]
+
+
+beforeEach((done) => {            //run some code before each descript script
     Todo.remove({})              //remove({})  wipe all todos;
-    .then(() => done());                 
+    .then(() => {
+        Todo.insertMany(todos);
+    }).then(() => done())                 
 });
 
-describe('POST ./todos', () => {
+describe('POST /todos', () => {
     it('should create a new todo', (done) => {
         let text = 'Test todo text';
 
@@ -27,8 +37,8 @@ describe('POST ./todos', () => {
             
             //MongoDb test
             Todo.find().then((todos) => {
-                expect(todos.length).toBe(1);
-                expect(todos[0].text).toBe(text);
+                expect(todos.length).toBe(6);
+                expect(todos[5].text).toBe(text);
                 done();
             }).catch(err => done(err));    //statement Syntax
         });
@@ -44,10 +54,23 @@ describe('POST ./todos', () => {
                 return done(err);
             
             Todo.find().then((todos) => {
-                expect(todos.length).toBe(0);
+                expect(todos.length).toBe(5);
                 done();
             }).
             catch(e => done(e));
         })
     })
+});
+
+describe('GET /todos', () => {
+    it('should get all todos', (done) => {
+        request(app)
+        .get('/todos')
+        .expect(200)
+        .expect(res => {
+            expect(res.body.length).toBe(5);
+        })
+        .end(done);
+    });
+
 });
