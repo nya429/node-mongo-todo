@@ -5,8 +5,9 @@ const {ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose');
 const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
-
 const app = express();
+//Heroku process.argv
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -76,8 +77,8 @@ app.post('/users',(req,res) => {
     })
 })
 
-app.listen(3000, () => {
-    console.log('Listening on port 3000');
+app.listen(port, () => {
+    console.log(`Started up at port ${port}`);
 });
 
 module.exports = {app};
