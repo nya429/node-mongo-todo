@@ -27,10 +27,11 @@ app.get('/todos/:id', (req,res) => {
     //res.status(200).send(req.params);  //test how req.params work
     let id = req.params.id;
 
-    //invalid Id 404
+    //invalidId
     if(!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
+    
     Todo.findById(id).then(todo => {
         if(!todo)
             return res.status(404).send();
@@ -39,12 +40,11 @@ app.get('/todos/:id', (req,res) => {
     });
 }, err => {
     res.status(400).send();                        //not sending cuz the err message may contain private info
-})
+});
 
 // POST /todos
 app.post('/todos',(req,res) => {
-    console.log('request body: ',req.body);
-    
+
     let newTodo = new Todo({
         text: req.body.text
     });
@@ -52,8 +52,7 @@ app.post('/todos',(req,res) => {
     newTodo.save().then(doc => {
         res.status(200).send(doc);
     }, err => {
-        res.status(400)
-        res.send(err);
+        res.status(400).send(err);
     })
 })
 
