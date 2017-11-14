@@ -87,7 +87,7 @@ describe('GET /todos/:id', () => {
           .get(`/todos/${id}`)
           .expect(200)
           .expect(res => {
-              expect(JSON.parse(res.text).text).toBe(todos[0].text);
+              expect(res.body.todo.text).toBe(todos[0].text);
           })
           .end(done);
       });

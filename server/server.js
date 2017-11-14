@@ -36,7 +36,7 @@ app.get('/todos/:id', (req,res) => {
         if(!todo)
             return res.status(404).send();
         else
-            return res.status(200).send(JSON.stringify(todo,undefined,2));
+            return res.status(200).send({todo});
     });
 }, err => {
     res.status(400).send();                        //not sending cuz the err message may contain private info
