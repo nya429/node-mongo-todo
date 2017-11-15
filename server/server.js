@@ -11,7 +11,7 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-
+/*-----------------------------------------------*/
 // GET /todos
 app.get('/todos', (req,res) => {
     let filter;
@@ -38,11 +38,13 @@ app.get('/todos/:id', (req,res) => {
             return res.status(404).send();
         else
             return res.status(200).send({todo});
+    }).catch(err => {
+            res.status(400).send();                        //not sending cuz the err message may contain private info
+
     });
-}, err => {
-    res.status(400).send();                        //not sending cuz the err message may contain private info
 });
 
+/*-----------------------------------------------*/
 // POST /todos
 app.post('/todos',(req,res) => {
 
@@ -54,7 +56,7 @@ app.post('/todos',(req,res) => {
         res.status(200).send(doc);
     }, err => {
         res.status(400).send(err);
-    })
+    });
 })
 
 
@@ -71,12 +73,34 @@ app.post('/users',(req,res) => {
 
     newUser.save().then(doc => {
         res.status(200).send(doc);
-    }, err => {
-        res.status(400)
+    },  err => {
+        res.status(400);
         res.send(err);
-    })
+    });
 })
 
+/*-----------------------------------------------*/
+// DELETE /todos
+app.delete('/todos/:id', (req,res) => {
+    let id = req.params.id;
+ 
+    if(!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+    
+    Todo.findByIdAndRemove(id).then(todo => {
+        if(!todo)
+            return res.status(404).send();
+        else
+            return res.status(200).send(todo);
+    }).catch((err) => {
+        res.status(400).send();
+    });
+});
+
+
+
+/*-----------------------------------------------*/
 app.listen(port, () => {
     console.log(`Started up at port ${port}`);
 });
