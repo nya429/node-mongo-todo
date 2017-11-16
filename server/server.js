@@ -104,10 +104,10 @@ app.patch('/todos/:id', (req,res) => {
     //new = returnOriginla
     Todo.findByIdAndUpdate(id, {$set: body}, {new:true}).then(todo => {
         if(!todo) {
-            return res.status().send()
+            return res.status(404).send()
         }
 
-        res.send({todo});
+        res.status(200).send({todo});
     }).catch(e => {
         res.status(404).send();
     });
@@ -125,8 +125,8 @@ app.delete('/todos/:id', (req,res) => {
     Todo.findByIdAndRemove(id).then(todo => {
         if(!todo)
             return res.status(404).send();
-        else
-            return res.status(200).send(todo);
+
+        res.status(200).send({todo:todo});
     }).catch((err) => {
         res.status(400).send();
     });
