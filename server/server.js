@@ -1,4 +1,5 @@
 /*jslint esversion:6*/
+const _ = require('lodash');
 const express= require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
@@ -77,10 +78,43 @@ app.post('/users',(req,res) => {
         res.status(400);
         res.send(err);
     });
-})
+});
 
 /*-----------------------------------------------*/
-// DELETE /todos
+//PATCH /todos/:id
+app.patch('/todos/:id', (req,res) => {
+    let id = req.params.id;
+
+    //pull the argument from the body assign to the body
+    //update the content only appeared in model
+    let body = _.pick(req.body,['text','completed']);
+   
+    if(!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+
+    //timestamp
+    if(_.isBoolean(body.completed) && body.completed) {
+        body.completedAt = new Date().getTime();
+    } else {
+        body.completed = false;
+        body.completedAt = null;
+    }
+
+    //new = returnOriginla
+    Todo.findByIdAndUpdate(id, {$set: body}, {new:true}).then(todo => {
+        if(!todo) {
+            return res.status().send()
+        }
+
+        res.send({todo});
+    }).catch(e => {
+        res.status(404).send();
+    });
+});
+
+/*-----------------------------------------------*/
+// DELETE /todos/:id
 app.delete('/todos/:id', (req,res) => {
     let id = req.params.id;
  
