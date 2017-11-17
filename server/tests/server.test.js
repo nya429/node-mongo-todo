@@ -11,7 +11,9 @@ const todos = [ {
                 'text':"todo test first"
             },{
                 _id: new ObjectID(),
-                'text':"todo test second"
+                'text':"todo test second",
+                'completed':true,
+                'completedAt':123456
             }
 ]
 
@@ -149,4 +151,33 @@ describe('DELETE /todos/:id', () => {
       .end(done);
     });
    
+});
+
+describe('PATCH /todos/:id', () => {
+
+    it('should patch a todo', (done) => {
+        let hexId = todos[1]._id.toHexString();
+        request(app)
+         .patch(`/todos/${hexId}`,
+            {$set: {
+             'completed': false,
+             'completedAt': null}
+            })
+         .expect(200)
+         .expect((res) => {
+            expect(res.body.todo.completed).toBe(false);
+         })
+         .end((err, res) => {
+            if(err) {
+                return done(err);
+              }
+
+            Todo.findById(hexId)
+              .then(todo => {
+                expect(todo.completed).toBe(false);
+                done();
+            }).catch(e => done(e));
+         });
+    });
+
 });
