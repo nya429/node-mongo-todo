@@ -1,4 +1,5 @@
 /*jslint esversion:6*/
+require('./config/config');
 const _ = require('lodash');
 const express= require('express');
 const bodyParser = require('body-parser');
@@ -164,7 +165,7 @@ module.exports = {app};
 
 // let user = new User({
 //     email: 'key@email.com',
-//     name:'Tony',
+//     name:'Octo',
 //     age:29,
 //     location:'NY'
 // });
