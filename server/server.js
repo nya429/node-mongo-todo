@@ -9,12 +9,16 @@ const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
 const app = express();
 //Heroku process.argv
-const port = process.env.PORT || 3000;
+const port = process.env.PORT; //|| 3000;
 
 app.use(bodyParser.json());
 
 /*-----------------------------------------------*/
-// GET /todos
+
+/**
+ * GET /todos
+ *
+/*-----------------------------------------------*/
 app.get('/todos', (req,res) => {
     let filter;
 
@@ -25,7 +29,11 @@ app.get('/todos', (req,res) => {
     });
 })
 
-// GET /todos/:id
+
+/**
+ * GET /todos/:id
+ *
+/*-----------------------------------------------*/
 app.get('/todos/:id', (req,res) => {
     //res.status(200).send(req.params);  //test how req.params work
     let id = req.params.id;
@@ -46,8 +54,10 @@ app.get('/todos/:id', (req,res) => {
     });
 });
 
+/**
+ *  POST /todos
+ *
 /*-----------------------------------------------*/
-// POST /todos
 app.post('/todos',(req,res) => {
 
     let newTodo = new Todo({
@@ -62,27 +72,11 @@ app.post('/todos',(req,res) => {
 })
 
 
-// POST /users
-app.post('/users',(req,res) => {
-    console.log('request body: ',req.body);
-    
-    let newUser = new User({
-        email: req.body.email,
-        name: req.body.name,
-        age: req.body.age,
-        location: req.body.location,
-    });
 
-    newUser.save().then(doc => {
-        res.status(200).send(doc);
-    },  err => {
-        res.status(400);
-        res.send(err);
-    });
-});
-
+/**
+ * PATCH /todos/:id
+ *
 /*-----------------------------------------------*/
-//PATCH /todos/:id
 app.patch('/todos/:id', (req,res) => {
     let id = req.params.id;
 
@@ -114,8 +108,12 @@ app.patch('/todos/:id', (req,res) => {
     });
 });
 
+
+/**
+ * DELETE /todos/:id
+ *
 /*-----------------------------------------------*/
-// DELETE /todos/:id
+
 app.delete('/todos/:id', (req,res) => {
     let id = req.params.id;
  
@@ -133,7 +131,27 @@ app.delete('/todos/:id', (req,res) => {
     });
 });
 
+/**
+ *  POST /users
+ *  create a new user
+/*-----------------------------------------------*/
+app.post('/users',(req,res) => {
 
+    
+    let body = _.pick(req.body,['email','password']);
+    console.log(body);
+    let user = new User(body);
+
+   
+
+    user.save().then(() => {
+        return user.generateAuthToken(); 
+    }).then(token => {
+        res.header('x-auth',token).send(user);
+    }).catch(e => {
+        res.status(400).send(e);
+    });  
+});
 
 /*-----------------------------------------------*/
 app.listen(port, () => {
