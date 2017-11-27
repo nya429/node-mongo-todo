@@ -137,19 +137,15 @@ app.delete('/todos/:id', (req,res) => {
  *  POST /users
  *  create a new user
 /*-----------------------------------------------*/
-app.post('/users',(req,res) => {
+app.post('/users', (req, res) => {
 
-    
-    let body = _.pick(req.body,['email','password']);
-    console.log(body);
+    let body = _.pick(req.body, ['email', 'password']);
     let user = new User(body);
-
-   
 
     user.save().then(() => {
         return user.generateAuthToken(); 
     }).then(token => {
-        res.header('x-auth',token).send(user);
+        res.header('x-auth', token).send(user);
     }).catch(e => {
         res.status(400).send(e);
     });  
