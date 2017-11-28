@@ -115,7 +115,6 @@ app.patch('/todos/:id', (req,res) => {
  * DELETE /todos/:id
  *
 /*-----------------------------------------------*/
-
 app.delete('/todos/:id', (req,res) => {
     let id = req.params.id;
  
@@ -151,9 +150,29 @@ app.post('/users', (req, res) => {
     });  
 });
 
-
+/**
+ *  GET /users/me
+ *  authenticate auth token
+/*-----------------------------------------------*/
 app.get('/users/me', authenticate, (req, res) => {
     res.send(req.user);
+});
+
+/**
+ *  POST /users/login {email, password}
+ *  authenticate login
+/*-----------------------------------------------*/
+app.post('/users/login', (req, res) => {
+    let body = _.pick(req.body, ['email','password']);
+
+    User.findByCredentials(body.email, body.password).then(user => {
+        user.generateAuthToken().then(token => {
+            res.header('x-auth',token).send(user);
+        });
+    }).catch(e => {
+        res.status(400).send();
+    })
+    
 });
 
 /*-----------------------------------------------*/
@@ -172,9 +191,9 @@ module.exports = {app};
 
 
 /*
-    call save on newTodo
-    save the instance to Mongodb.TodoApp.Todo
-    return Promise
+ *   call save on newTodo
+ *  save the instance to Mongodb.TodoApp.Todo
+ * return Promise
 */
 // newTodo.save().then(doc => {
 //     console.log('Saved todo', doc);

@@ -100,6 +100,29 @@ UserSchema.statics.findByToken = function (token) {
     });
 };
 
+
+UserSchema.statics.findByCredentials = function (email,password) {
+    let User = this;
+    let decoded; 
+    
+    return User.findOne({email}).then(user => {
+        if(!user) {
+            return Promise.reject();
+        }
+
+        return new Promise ((resolve, reject) => {
+            //bcrypt only return callback
+            bcrypt.compare(password, user.password, (err, res) => {
+                if(res) {
+                    return resolve(user);
+                } else {
+                    eject();
+                }
+            });
+        });
+    });
+};
+
 /**
  * There are two types of pre hooks, serial and parallel.
  * arg2 -> default false, ignorable
